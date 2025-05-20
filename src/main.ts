@@ -2,6 +2,8 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ResponseTransformInterceptor } from './common/interceptor/response.iterceptor';
+import { GlobalExceptionFilter } from './common/filters/global.exception.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -22,6 +24,13 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
 
   app.enableCors();
+
+  // Interceptor untuk wrap response sukses
+  app.useGlobalInterceptors(new ResponseTransformInterceptor());
+
+  // Filter untuk wrap error
+  app.useGlobalFilters(new GlobalExceptionFilter());
+
 
   await app.listen(3000);
 }

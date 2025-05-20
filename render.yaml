@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: nest-api
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: uefnaojxivvxeamljskn
+          property: connectionString

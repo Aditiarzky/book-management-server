@@ -8,10 +8,11 @@ export class GenresService {
   constructor(private prisma: PrismaService) {}
 
   async create(createGenreDto: CreateGenreDto) {
+    console.log('Creating genre with data:', createGenreDto);
     return this.prisma.genre.create({
       data: {
         nama: createGenreDto.nama,
-        deskripsi: createGenreDto.deskripsi,
+        deskripsi: createGenreDto.deskripsi || null,
       },
     });
   }

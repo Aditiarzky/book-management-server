@@ -1,7 +1,3 @@
-Berikut adalah **daftar endpoint lengkap** dari API Manga Management beserta **contoh JSON untuk request `POST`**, diringkas dalam format yang mudah dipahami dan siap disalin:
-
----
-
 # 📡 Endpoint API & Contoh POST Request
 
 ## 1. Genre (`/genres`)
