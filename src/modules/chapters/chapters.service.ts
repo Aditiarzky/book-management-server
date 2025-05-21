@@ -21,13 +21,31 @@ export class ChaptersService {
         nama: createChapterDto.nama,
         thumbnail: createChapterDto.thumbnail,
         isigambar: createChapterDto.isigambar,
-        isitext: createChapterDto.isitext, 
+        isitext: createChapterDto.isitext,
       },
     });
   }
 
-  async findAll() {
-    return this.prisma.chapter.findMany({ include: { book: true } });
+  async findAll(page: number, limit: number) {
+    const skip = (page - 1) * limit; 
+    
+    const chapters = await this.prisma.chapter.findMany({
+      skip,
+      take: limit,
+      include: { book: true },
+    });
+
+    const total = await this.prisma.chapter.count();
+
+    return {
+      data: chapters,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
 
   async findOne(id: number) {
@@ -56,7 +74,7 @@ export class ChaptersService {
         nama: updateChapterDto.nama,
         thumbnail: updateChapterDto.thumbnail,
         isigambar: updateChapterDto.isigambar,
-        isitext: updateChapterDto.isitext, 
+        isitext: updateChapterDto.isitext,
       },
       include: { book: true },
     });

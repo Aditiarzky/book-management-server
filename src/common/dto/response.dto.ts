@@ -9,4 +9,12 @@ export class ResponseDto<T = any> {
 
   @ApiProperty({ nullable: true, required: false })
   data?: T | null;
+
+  @ApiProperty({ required: false, description: 'Pagination metadata', example: { total: 25, page: 1, limit: 10, totalPages: 3 } })
+  meta?: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
 }

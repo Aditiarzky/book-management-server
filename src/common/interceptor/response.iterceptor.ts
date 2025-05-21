@@ -7,24 +7,36 @@ import { ResponseDto } from '../dto/response.dto';
 export class ResponseTransformInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
-      map((data) => {
-        const response: ResponseDto = {
-          success: true,
-          message: 'Request successfully processed',
-          data,
-        };
-
-        // Sesuaikan pesan jika diperlukan berdasarkan URL atau context
+      map((result) => {
         const httpContext = context.switchToHttp();
         const request = httpContext.getRequest();
 
+        // Tentukan pesan berdasarkan metode HTTP
+        let message = 'Request successfully processed';
         if (request.method === 'POST') {
-          response.message = 'Data successfully added';
+          message = 'Data successfully added';
         } else if (request.method === 'PUT' || request.method === 'PATCH') {
-          response.message = 'Data successfully edited';
+          message = 'Data successfully edited';
         } else if (request.method === 'GET') {
-          response.message = 'Data retrieved successfully';
+          message = 'Data retrieved successfully';
         }
+
+        // Periksa apakah result memiliki struktur pagination (data dan meta)
+        if (result && typeof result === 'object' && 'data' in result && 'meta' in result) {
+          return {
+            success: true,
+            message,
+            data: result.data,
+            meta: result.meta,
+          };
+        }
+
+        // Untuk respons biasa, gunakan struktur default
+        const response: ResponseDto = {
+          success: true,
+          message,
+          data: result,
+        };
 
         return response;
       }),
