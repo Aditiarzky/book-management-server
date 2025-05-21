@@ -19,7 +19,7 @@ export class CreateChapterDto {
 
   @ApiProperty({ description: 'Chapter name' })
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   nama: string;
 
   @ApiProperty({ description: 'Thumbnail URL', required: false })

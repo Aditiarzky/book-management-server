@@ -28,7 +28,7 @@ export class ChaptersService {
 
   async findAll(page: number, limit: number) {
     const skip = (page - 1) * limit; 
-    
+
     const chapters = await this.prisma.chapter.findMany({
       skip,
       take: limit,
@@ -48,16 +48,51 @@ export class ChaptersService {
     };
   }
 
-  async findOne(id: number) {
-    const chapter = await this.prisma.chapter.findUnique({ where: { id }, include: { book: true } });
+  async findById(id: number) {
+    const chapter = await this.prisma.chapter.findFirst({
+      where: {
+        id,
+      },
+      include: { book: true },
+    });
+
     if (!chapter) {
       throw new NotFoundException(`Chapter with ID ${id} not found`);
     }
     return chapter;
   }
 
+  async findOne(id: number, bookId: number) {
+    const chapter = await this.prisma.chapter.findFirst({
+      where: {
+        id,
+        bookId, 
+      },
+      include: { book: true },
+    });
+
+    if (!chapter) {
+      throw new NotFoundException(`Chapter with ID ${id} and Book ID ${bookId} not found`);
+    }
+    return chapter;
+  }
+
+  async findByBook(bookId: number) {
+    const chapter = await this.prisma.chapter.findMany({
+      where: {
+        bookId, 
+      },
+      include: { book: true },
+    });
+
+    if (!chapter) {
+      throw new NotFoundException(`Chapter with Book ID ${bookId} not found`);
+    }
+    return chapter;
+  }
+
   async update(id: number, updateChapterDto: UpdateChapterDto) {
-    const chapter = await this.findOne(id);
+    const chapter = await this.findOne(id, updateChapterDto.bookId ?? 0); 
     if (updateChapterDto.bookId) {
       const book = await this.prisma.book.findUnique({ where: { id: updateChapterDto.bookId } });
       if (!book) {
@@ -81,7 +116,7 @@ export class ChaptersService {
   }
 
   async remove(id: number) {
-    await this.findOne(id);
+    await this.findById(id);
     return this.prisma.chapter.delete({ where: { id } });
   }
 }

@@ -40,23 +40,81 @@ export class ChaptersController {
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get a chapter by ID' })
+  @ApiOperation({ summary: 'Get a chapter by ID and Book ID' })
+  @ApiQuery({ name: 'bookId', required: true, type: Number, description: 'Book ID associated with the chapter' })
   @ApiResponse({ status: 200, description: 'Chapter details', type: Chapter })
-  findOne(@Param('id') id: string) {
-    return this.chaptersService.findOne(+id);
+  async findOne(
+    @Param('id') id: string,
+    @Query('bookId') bookId: string,
+  ) {
+    const parsedId = parseInt(id, 10);
+    const parsedBookId = parseInt(bookId, 10);
+
+    if (isNaN(parsedId) || parsedId < 1) {
+      throw new BadRequestException('Chapter ID must be a positive integer');
+    }
+    if (isNaN(parsedBookId) || parsedBookId < 1) {
+      throw new BadRequestException('Book ID must be a positive integer');
+    }
+
+    return this.chaptersService.findOne(parsedId, parsedBookId);
+  }
+
+  @Get('book/:bookId')
+  @ApiOperation({ summary: 'Get a chapter by ID and Book ID' })
+  @ApiQuery({ name: 'bookId', required: true, type: Number, description: 'Book ID associated with the chapter' })
+  @ApiResponse({ status: 200, description: 'Chapter details', type: Chapter })
+  async findByBook(
+    @Param('bookId') bookId: string,
+  ) {
+    const parsedBookId = parseInt(bookId, 10);
+
+    if (isNaN(parsedBookId) || parsedBookId < 1) {
+      throw new BadRequestException('Book ID must be a positive integer');
+    }
+
+    return this.chaptersService.findByBook(parsedBookId);
   }
 
   @Put(':id')
   @ApiOperation({ summary: 'Update a chapter' })
+  @ApiQuery({ name: 'bookId', required: true, type: Number, description: 'Book ID associated with the chapter' })
   @ApiResponse({ status: 200, description: 'Chapter updated', type: Chapter })
-  update(@Param('id') id: string, @Body() updateChapterDto: UpdateChapterDto) {
-    return this.chaptersService.update(+id, updateChapterDto);
+  async update(
+    @Param('id') id: string,
+    @Query('bookId') bookId: string,
+    @Body() updateChapterDto: UpdateChapterDto,
+  ) {
+    const parsedId = parseInt(id, 10);
+    const parsedBookId = parseInt(bookId, 10);
+
+    if (isNaN(parsedId) || parsedId < 1) {
+      throw new BadRequestException('Chapter ID must be a positive integer');
+    }
+    if (isNaN(parsedBookId) || parsedBookId < 1) {
+      throw new BadRequestException('Book ID must be a positive integer');
+    }
+
+    // Pastikan bookId di DTO sesuai dengan query parameter
+    if (updateChapterDto.bookId && updateChapterDto.bookId !== parsedBookId) {
+      throw new BadRequestException('Book ID in body must match Book ID in query');
+    }
+
+    return this.chaptersService.update(parsedId, updateChapterDto);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a chapter' })
   @ApiResponse({ status: 200, description: 'Chapter deleted' })
-  remove(@Param('id') id: string) {
-    return this.chaptersService.remove(+id);
+  async remove(
+    @Param('id') id: string,
+  ) {
+    const parsedId = parseInt(id, 10);
+
+    if (isNaN(parsedId) || parsedId < 1) {
+      throw new BadRequestException('Chapter ID must be a positive integer');
+    }
+
+    return this.chaptersService.remove(parsedId);
   }
 }

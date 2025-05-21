@@ -78,8 +78,8 @@ Membuat chapter baru terkait dengan suatu buku.
 | Method | Endpoint               | Deskripsi                        | Parameter Opsional (Query)       |
 |--------|------------------------|----------------------------------|----------------------------------|
 | GET    | `/chapters`            | Dapatkan semua chapter dengan pagination | `page` (default: 1), `limit` (default: 10) |
-| GET    | `/chapters/:id`        | Dapatkan chapter berdasarkan ID  | -                                |
-| PUT    | `/chapters/:id`        | Perbarui chapter                 | -                                |
+| GET    | `/chapters/:id?bookId=1`| Dapatkan chapter dari ID dan Book ID  | -                                |
+| PUT    | `/chapters/:id?bookId=1`| Perbarui chapter                 | -                                |
 | DELETE | `/chapters/:id`        | Hapus chapter                    | -                                |
 
 > 💡 Parameter `page` menentukan nomor halaman, dan `limit` menentukan jumlah item per halaman. Contoh: `/chapters?page=2&limit=5`.
