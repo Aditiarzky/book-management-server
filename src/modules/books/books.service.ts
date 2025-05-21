@@ -33,8 +33,26 @@ export class BooksService {
     });
   }
 
-  async findAll() {
-    return this.prisma.book.findMany({ include: { genres: true, chapters: true } });
+  async findAll(page: number, limit: number) {
+    const skip = (page - 1) * limit; 
+
+    const books = await this.prisma.book.findMany({
+      skip,
+      take: limit,
+      include: { genres: true, chapters: true },
+    });
+
+    const total = await this.prisma.book.count();
+
+    return {
+      data: books,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
 
   async findOne(id: number) {
@@ -84,23 +102,22 @@ export class BooksService {
   }
 
   // Pencarian berdasarkan kombinasi genre
-    async findByGenreCombination(genreIds: number[]) {
+  async findByGenreCombination(genreIds: number[]) {
     const books = await this.prisma.book.findMany({
-        where: {
+      where: {
         genres: {
-            some: {
+          some: {
             id: { in: genreIds },
-            },
+          },
         },
-        },
-        include: { genres: true, chapters: true },
+      },
+      include: { genres: true, chapters: true },
     });
 
     // Filter manual: ambil hanya yang punya semua genreIds
     return books.filter((book) => {
-        const bookGenreIds = book.genres.map((genre) => genre.id);
-        return genreIds.every((id) => bookGenreIds.includes(id));
+      const bookGenreIds = book.genres.map((genre) => genre.id);
+      return genreIds.every((id) => bookGenreIds.includes(id));
     });
-    }
-
+  }
 }

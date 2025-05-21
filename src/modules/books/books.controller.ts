@@ -2,8 +2,8 @@ import { Controller, Get, Post, Body, Param, Put, Delete, Query, BadRequestExcep
 import { BooksService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { Book } from './dto/book-response.dto'; 
+import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
+import { Book } from './dto/book-response.dto';
 
 @ApiTags('books')
 @Controller('books')
@@ -18,10 +18,25 @@ export class BooksController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all books' })
-  @ApiResponse({ status: 200, description: 'List of books', type: [Book] })
-  findAll() {
-    return this.booksService.findAll();
+  @ApiOperation({ summary: 'Get all books with pagination' })
+  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number (default: 1)' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Items per page (default: 10)' })
+  @ApiResponse({ status: 200, description: 'List of books with pagination', type: [Book] })
+  async findAll(
+    @Query('page') page: string = '1',
+    @Query('limit') limit: string = '10',
+  ) {
+    const parsedPage = parseInt(page, 10);
+    const parsedLimit = parseInt(limit, 10);
+
+    if (isNaN(parsedPage) || parsedPage < 1) {
+      throw new BadRequestException('Page must be a positive integer');
+    }
+    if (isNaN(parsedLimit) || parsedLimit < 1) {
+      throw new BadRequestException('Limit must be a positive integer');
+    }
+
+    return this.booksService.findAll(parsedPage, parsedLimit);
   }
 
   @Get('search')
@@ -47,12 +62,12 @@ export class BooksController {
     return this.booksService.findByGenreCombination(ids);
   }
 
-    @Get(':id')
-    @ApiOperation({ summary: 'Get a book by ID' })
-    @ApiResponse({ status: 200, description: 'Book details', type: Book })
-    findOne(@Param('id') id: string) {
-        return this.booksService.findOne(+id);
-    }
+  @Get(':id')
+  @ApiOperation({ summary: 'Get a book by ID' })
+  @ApiResponse({ status: 200, description: 'Book details', type: Book })
+  findOne(@Param('id') id: string) {
+    return this.booksService.findOne(+id);
+  }
 
   @Put(':id')
   @ApiOperation({ summary: 'Update a book' })
