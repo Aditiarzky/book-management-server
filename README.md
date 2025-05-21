@@ -1,3 +1,6 @@
+
+---
+
 # 📡 Endpoint API & Contoh POST Request
 
 ## 1. Genre (`/genres`)
@@ -42,13 +45,15 @@ Membuat buku baru dengan relasi ke genre (Many-to-Many).
 
 > 💡 `alt_judul`, `synopsis`, `status`, dan `type` bersifat opsional
 
-| Method | Endpoint              | Deskripsi                              |
-|--------|-----------------------|----------------------------------------|
-| GET    | `/books`              | Dapatkan semua buku                    |
-| GET    | `/books/:id`          | Dapatkan buku berdasarkan ID           |
-| GET    | `/books/search?genreIds=1,2` | Cari buku berdasarkan genre IDs |
-| PUT    | `/books/:id`          | Perbarui buku                          |
-| DELETE | `/books/:id`          | Hapus buku                             |
+| Method | Endpoint              | Deskripsi                              | Parameter Opsional (Query)       |
+|--------|-----------------------|----------------------------------------|----------------------------------|
+| GET    | `/books`              | Dapatkan semua buku dengan pagination  | `page` (default: 1), `limit` (default: 10) |
+| GET    | `/books/:id`          | Dapatkan buku berdasarkan ID           | -                                |
+| GET    | `/books/search?genreIds=1,2` | Cari buku berdasarkan genre IDs | -                                |
+| PUT    | `/books/:id`          | Perbarui buku                          | -                                |
+| DELETE | `/books/:id`          | Hapus buku                             | -                                |
+
+> 💡 Parameter `page` menentukan nomor halaman, dan `limit` menentukan jumlah item per halaman. Contoh: `/books?page=2&limit=5`.
 
 ---
 
@@ -64,21 +69,19 @@ Membuat chapter baru terkait dengan suatu buku.
   "nama": "The Beginning",
   "thumbnail": "https://example.com/thumb.jpg",
   "isigambar": "Image data content...",
-  "istext": "Text content of the chapter..."
+  "isitext": "Text content of the chapter..."
 }
 ```
 
-> 💡 `volume`, `thumbnail`, `isigambar`, dan `istext` bersifat opsional
+> 💡 `volume`, `thumbnail`, `isigambar`, dan `isitext` bersifat opsional
 
-| Method | Endpoint               | Deskripsi                        |
-|--------|------------------------|----------------------------------|
-| GET    | `/chapters`            | Dapatkan semua chapter           |
-| GET    | `/chapters/:id`        | Dapatkan chapter berdasarkan ID  |
-| PUT    | `/chapters/:id`        | Perbarui chapter                 |
-| DELETE | `/chapters/:id`        | Hapus chapter                    |
+| Method | Endpoint               | Deskripsi                        | Parameter Opsional (Query)       |
+|--------|------------------------|----------------------------------|----------------------------------|
+| GET    | `/chapters`            | Dapatkan semua chapter dengan pagination | `page` (default: 1), `limit` (default: 10) |
+| GET    | `/chapters/:id`        | Dapatkan chapter berdasarkan ID  | -                                |
+| PUT    | `/chapters/:id`        | Perbarui chapter                 | -                                |
+| DELETE | `/chapters/:id`        | Hapus chapter                    | -                                |
+
+> 💡 Parameter `page` menentukan nomor halaman, dan `limit` menentukan jumlah item per halaman. Contoh: `/chapters?page=2&limit=5`.
 
 ---
-
-✅ File ini bisa kamu gunakan sebagai referensi cepat atau tambahkan ke dokumen lain seperti Notion, Postman collection, atau README tambahan.
-
-Jika kamu ingin versi dalam format lain (misalnya: Postman Collection, Swagger/OpenAPI YAML, atau PDF), beri tahu saya!

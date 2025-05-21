@@ -23,7 +23,10 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  app.enableCors();
+  app.enableCors({
+    origin: ['http://localhost:5173', 'https://riztranslation.rf.gd', 'http://riztranslation.rf.gd', 'https://www.riztranslation.rf.gd', 'http://www.riztranslation.rf.gd'], 
+    credentials: true,
+  });
 
   // Interceptor untuk wrap response sukses
   app.useGlobalInterceptors(new ResponseTransformInterceptor());
