@@ -24,7 +24,7 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
 
   app.enableCors({
-    origin: ['http://localhost:5173', 'https://riztranslation.rf.gd', 'http://riztranslation.rf.gd', 'https://www.riztranslation.rf.gd', 'http://www.riztranslation.rf.gd'], 
+    origin: ['https://8f0f-66-96-225-146.ngrok-free.app', 'http://localhost:5173', 'https://riztranslation.rf.gd', 'http://riztranslation.rf.gd', 'https://www.riztranslation.rf.gd', 'http://www.riztranslation.rf.gd'], 
     credentials: true,
   });
 
