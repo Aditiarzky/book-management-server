@@ -21,10 +21,12 @@ export class ChaptersController {
   @ApiOperation({ summary: 'Get all chapters with pagination' })
   @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number (default: 1)' })
   @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Items per page (default: 10)' })
+  @ApiQuery({ name: 'sorBy', required: false, type: String, description: 'Sorting data by asc or desc (default: desc)' })
   @ApiResponse({ status: 200, description: 'List of chapters with pagination', type: [Chapter] })
   async findAll(
     @Query('page') page: string = '1',
     @Query('limit') limit: string = '10',
+    @Query('sortBy') sortBy: string = 'desc',
   ) {
     const parsedPage = parseInt(page, 10);
     const parsedLimit = parseInt(limit, 10);
@@ -35,8 +37,11 @@ export class ChaptersController {
     if (isNaN(parsedLimit) || parsedLimit < 1) {
       throw new BadRequestException('Limit must be a positive integer');
     }
+    if (sortBy !== 'asc' && sortBy !== 'desc') {
+      throw new BadRequestException('sortBy must be either "asc" or "desc"');
+    }
 
-    return this.chaptersService.findAll(parsedPage, parsedLimit);
+    return this.chaptersService.findAll(parsedPage, parsedLimit, sortBy);
   }
 
   @Get(':id')
@@ -62,18 +67,22 @@ export class ChaptersController {
 
   @Get('book/:bookId')
   @ApiOperation({ summary: 'Get a chapter by ID and Book ID' })
-  @ApiQuery({ name: 'bookId', required: true, type: Number, description: 'Book ID associated with the chapter' })
+  @ApiQuery({ name: 'sortBy', required: false, type: String, description: 'Sorting data by asc or desc (default: desc)' })
   @ApiResponse({ status: 200, description: 'Chapter details', type: Chapter })
   async findByBook(
     @Param('bookId') bookId: string,
+    @Query('sortBy') sortBy: string = 'desc',
   ) {
     const parsedBookId = parseInt(bookId, 10);
 
     if (isNaN(parsedBookId) || parsedBookId < 1) {
       throw new BadRequestException('Book ID must be a positive integer');
     }
+    if (sortBy !== 'asc' && sortBy !== 'desc') {
+      throw new BadRequestException('sortBy must be either "asc" or "desc"');
+    }
 
-    return this.chaptersService.findByBook(parsedBookId);
+    return this.chaptersService.findByBook(parsedBookId, sortBy);
   }
 
   @Put(':id')

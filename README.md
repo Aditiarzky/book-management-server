@@ -47,9 +47,9 @@ Membuat buku baru dengan relasi ke genre (Many-to-Many).
 
 | Method | Endpoint              | Deskripsi                              | Parameter Opsional (Query)       |
 |--------|-----------------------|----------------------------------------|----------------------------------|
-| GET    | `/books`              | Dapatkan semua buku dengan pagination  | `page` (default: 1), `limit` (default: 10) |
+| GET    | `/books`              | Dapatkan semua buku dengan pagination  | `page` (default: 1), `limit` (default: 10) `sortBy` (default: desc) |
 | GET    | `/books/:id`          | Dapatkan buku berdasarkan ID           | -                                |
-| GET    | `/books/search?genreIds=1,2` | Cari buku berdasarkan genre IDs | -                                |
+| GET    | `/books/search?genreIds=1,2` | Cari buku berdasarkan genre IDs | `sortBy` (default: desc)         |
 | PUT    | `/books/:id`          | Perbarui buku                          | -                                |
 | DELETE | `/books/:id`          | Hapus buku                             | -                                |
 
@@ -77,8 +77,8 @@ Membuat chapter baru terkait dengan suatu buku.
 
 | Method | Endpoint               | Deskripsi                        | Parameter Opsional (Query)       |
 |--------|------------------------|----------------------------------|----------------------------------|
-| GET    | `/chapters`            | Dapatkan semua chapter dengan pagination | `page` (default: 1), `limit` (default: 10) |
-| GET    | `/chapters/:id?bookId=1`| Dapatkan chapter dari ID dan Book ID  | -                                |
+| GET    | `/chapters`            | Dapatkan semua chapter dengan pagination | `page` (default: 1), `limit` (default: 10) `sortBy` (default: desc)|
+| GET    | `/chapters/:id?bookId=1`| Dapatkan chapter dari ID dan Book ID  |`sortBy` (default: desc)      |
 | PUT    | `/chapters/:id?bookId=1`| Perbarui chapter                 | -                                |
 | DELETE | `/chapters/:id`        | Hapus chapter                    | -                                |
 

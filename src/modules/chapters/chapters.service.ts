@@ -26,12 +26,15 @@ export class ChaptersService {
     });
   }
 
-  async findAll(page: number, limit: number) {
+  async findAll(page: number, limit: number, sortBy: 'asc' | 'desc' = 'desc') {
     const skip = (page - 1) * limit; 
 
     const chapters = await this.prisma.chapter.findMany({
       skip,
       take: limit,
+      orderBy: {
+        created_at: sortBy,
+      },
       include: { book: true },
     });
 
@@ -77,10 +80,13 @@ export class ChaptersService {
     return chapter;
   }
 
-  async findByBook(bookId: number) {
+  async findByBook(bookId: number, sortBy: 'asc' | 'desc' = 'desc') {
     const chapter = await this.prisma.chapter.findMany({
       where: {
         bookId, 
+      },
+      orderBy: {
+        chapter: sortBy,
       },
       include: { book: true },
     });

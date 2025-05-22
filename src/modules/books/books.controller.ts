@@ -21,10 +21,12 @@ export class BooksController {
   @ApiOperation({ summary: 'Get all books with pagination' })
   @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number (default: 1)' })
   @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Items per page (default: 10)' })
+  @ApiQuery({ name: 'sortBy', required: false, type: String, description: 'Sort by created_at (asc or desc, default: desc)' })
   @ApiResponse({ status: 200, description: 'List of books with pagination', type: [Book] })
   async findAll(
     @Query('page') page: string = '1',
     @Query('limit') limit: string = '10',
+    @Query('sortBy') sortBy: string = 'desc',
   ) {
     const parsedPage = parseInt(page, 10);
     const parsedLimit = parseInt(limit, 10);
@@ -35,31 +37,36 @@ export class BooksController {
     if (isNaN(parsedLimit) || parsedLimit < 1) {
       throw new BadRequestException('Limit must be a positive integer');
     }
+    if (sortBy !== 'asc' && sortBy !== 'desc') {
+      throw new BadRequestException('sortBy must be either "asc" or "desc"');
+    }
 
-    return this.booksService.findAll(parsedPage, parsedLimit);
+    return this.booksService.findAll(parsedPage, parsedLimit, sortBy as 'asc' | 'desc');
   }
 
   @Get('search')
   @ApiOperation({ summary: 'Search books by genre combination' })
+  @ApiQuery({ name: 'genreIds', required: true, type: String, description: 'Comma-separated list of genre IDs' })
+  @ApiQuery({ name: 'sortBy', required: false, type: String, description: 'Sort by created_at (asc or desc, default: desc)' })
   @ApiResponse({ status: 200, description: 'List of books matching genre combination', type: [Book] })
-  async searchByGenre(@Query('genreIds') genreIds: string) {
-    console.log('Received genreIds query:', genreIds);
-
+  async searchByGenre(@Query('genreIds') genreIds: string, @Query('sortBy') sortBy: string = 'desc') {
     if (!genreIds) {
       throw new BadRequestException('Genre IDs are required');
     }
 
     const ids = genreIds.split(',').map((id) => {
       const parsedId = +id;
-      console.log(`Converting ID "${id}" to ${parsedId}`);
       if (isNaN(parsedId) || parsedId <= 0) {
         throw new BadRequestException(`Invalid genre ID: ${id}`);
       }
       return parsedId;
     });
 
-    console.log('Converted genreIds array:', ids);
-    return this.booksService.findByGenreCombination(ids);
+    if (sortBy !== 'asc' && sortBy !== 'desc') {
+      throw new BadRequestException('sortBy must be either "asc" or "desc"');
+    }
+
+    return this.booksService.findByGenreCombination(ids, sortBy as 'asc' | 'desc');
   }
 
   @Get(':id')

@@ -18,7 +18,7 @@ export class GenresService {
   }
 
   async findAll() {
-    return this.prisma.genre.findMany({ include: { books: true } });
+    return this.prisma.genre.findMany({ orderBy:{nama:'asc'},include: { books: true } });
   }
 
   async findOne(id: number) {
