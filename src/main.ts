@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ResponseTransformInterceptor } from './common/interceptor/response.iterceptor';
 import { GlobalExceptionFilter } from './common/filters/global.exception.filter';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -22,6 +23,8 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
+
+  app.use(cookieParser());
 
   app.enableCors({
     origin: ['https://8f0f-66-96-225-146.ngrok-free.app', 'http://localhost:5173', 'https://riztranslation.rf.gd', 'http://riztranslation.rf.gd', 'https://www.riztranslation.rf.gd', 'http://www.riztranslation.rf.gd'], 

@@ -29,7 +29,22 @@ export class BooksService {
           connect: createBookDto.genreIds.map((id) => ({ id })),
         },
       },
-      include: { genres: true, chapters: true },
+      include: {genres: {
+        select:{
+          id:true,
+          nama:true,
+        }
+      }, 
+      chapters:{
+        select:{
+          id:true,
+          chapter:true,
+          volume:true,
+          nama:true,
+          created_at:true,
+          thumbnail:true,
+        }
+      }},
     });
   }
 
@@ -42,7 +57,22 @@ export class BooksService {
       orderBy: {
         created_at: sortBy,
       },
-      include: { genres: true, chapters: true },
+      include: {genres: {
+        select:{
+          id:true,
+          nama:true,
+        }
+      }, 
+      chapters:{
+        select:{
+          id:true,
+          chapter:true,
+          volume:true,
+          nama:true,
+          created_at:true,
+          thumbnail:true,
+        }
+      }},
     });
 
     const total = await this.prisma.book.count();
@@ -61,7 +91,22 @@ export class BooksService {
   async findOne(id: number) {
     const book = await this.prisma.book.findUnique({
       where: { id },
-      include: { genres: true, chapters: true },
+      include: { genres: {
+        select:{
+          id:true,
+          nama:true,
+        }
+      }, 
+      chapters:{
+        select:{
+          id:true,
+          chapter:true,
+          volume:true,
+          nama:true,
+          created_at:true,
+          thumbnail:true,
+        }
+      }},
     });
     if (!book) {
       throw new NotFoundException(`Book with ID ${id} not found`);
@@ -95,7 +140,22 @@ export class BooksService {
           ? { set: updateBookDto.genreIds.map((id) => ({ id })) }
           : undefined,
       },
-      include: { genres: true, chapters: true },
+      include: { genres: {
+        select:{
+          id:true,
+          nama:true,
+        }
+      }, 
+      chapters:{
+        select:{
+          id:true,
+          chapter:true,
+          volume:true,
+          nama:true,
+          created_at:true,
+          thumbnail:true,
+        }
+      }},
     });
   }
 
@@ -104,24 +164,94 @@ export class BooksService {
     return this.prisma.book.delete({ where: { id } });
   }
 
-  async findByGenreCombination(genreIds: number[], sortBy: 'asc' | 'desc' = 'desc') {
-    const books = await this.prisma.book.findMany({
-      where: {
-        genres: {
-          some: {
-            id: { in: genreIds },
-          },
-        },
-      },
-      orderBy: {
-        created_at: sortBy,
-      },
-      include: { genres: true, chapters: true },
-    });
+async findBySearchCombination(
+  genreIds?: number[],
+  search?: string,
+  creator?: string,
+  sortBy: 'asc' | 'desc' = 'desc',
+  page: number = 1,
+  limit: number = 10
+) {
+  const noFilter =
+    (!genreIds || genreIds.length === 0) &&
+    (!search || search.trim() === '') &&
+    (!creator || creator.trim() === '');
 
-    return books.filter((book) => {
-      const bookGenreIds = book.genres.map((genre) => genre.id);
-      return genreIds.every((id) => bookGenreIds.includes(id));
-    });
+  if (noFilter) {
+    return this.findAll(page, limit, sortBy);
   }
+
+  const filters: any = {};
+
+  if (search) {
+    filters.OR = [
+      { judul: { contains: search, mode: 'insensitive' } },
+      { alt_judul: { contains: search, mode: 'insensitive' } },
+    ];
+  }
+
+  if (creator) {
+    filters.OR = [
+      ...(filters.OR || []),
+      { author: { contains: creator, mode: 'insensitive' } },
+      { artist: { contains: creator, mode: 'insensitive' } },
+    ];
+  }
+
+  if (genreIds && genreIds.length > 0) {
+    filters.genres = {
+      some: {
+        id: { in: genreIds },
+      },
+    };
+  }
+
+  const skip = (page - 1) * limit;
+
+  const books = await this.prisma.book.findMany({
+    where: filters,
+    skip,
+    take: limit,
+    orderBy: {
+      created_at: sortBy,
+    },
+    include: { 
+      genres: {
+        select:{
+          id:true,
+          nama:true,
+        }
+      }, 
+      chapters:{
+        select:{
+          id:true,
+          chapter:true,
+          volume:true,
+          nama:true,
+          created_at:true,
+          thumbnail:true,
+        }
+      }},
+  });
+
+  const total = await this.prisma.book.count({ where: filters });
+
+  const finalBooks =
+    genreIds && genreIds.length > 0
+      ? books.filter((book) => {
+          const bookGenreIds = book.genres.map((genre) => genre.id);
+          return genreIds.every((id) => bookGenreIds.includes(id));
+        })
+      : books;
+
+  return {
+    data: finalBooks,
+    meta: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
+}
 }
