@@ -41,6 +41,7 @@ export class BooksService {
           chapter:true,
           volume:true,
           nama:true,
+          bookId:true,
           created_at:true,
           thumbnail:true,
         }
@@ -69,6 +70,7 @@ export class BooksService {
           chapter:true,
           volume:true,
           nama:true,
+          bookId:true,
           created_at:true,
           thumbnail:true,
         }
@@ -103,6 +105,7 @@ export class BooksService {
           chapter:true,
           volume:true,
           nama:true,
+          bookId:true,
           created_at:true,
           thumbnail:true,
         }
@@ -152,6 +155,7 @@ export class BooksService {
           chapter:true,
           volume:true,
           nama:true,
+          bookId:true,
           created_at:true,
           thumbnail:true,
         }
@@ -228,6 +232,7 @@ async findBySearchCombination(
           chapter:true,
           volume:true,
           nama:true,
+          bookId:true,
           created_at:true,
           thumbnail:true,
         }
